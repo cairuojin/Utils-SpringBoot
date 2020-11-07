@@ -13,6 +13,7 @@
 	<modules>
 		<!-- SFTP封装工具 -->
 		<module>sftp_utils</module>
+		<module>scheduled_lock_utils</module>
 
 	</modules>
 
