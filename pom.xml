@@ -9,7 +9,6 @@
 
 	<name>Utils-SpringBoot</name>
 	<description>Utils-SpringBoot project for Spring Boot</description>
-
 	<modules>
 		<!-- SFTP封装工具 -->
 		<module>sftp_utils</module>
@@ -19,6 +18,8 @@
 
 	<!-- 配置私服仓库 -->
 	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<java.version>1.8</java.version>
 		<spring.boot.version>1.5.15.RELEASE</spring.boot.version>
 	</properties>
@@ -34,7 +35,15 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring.boot.version}</version>
+			</plugin>
+		</plugins>
+	</build>
 
 
 </project>

@@ -6,11 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 在定时器方法上添加此自定义注解以添加redis分布式锁，用以解决多台服务器启动时只启动一次定时器的场景，expire为锁时长，建议无需太长
+ * 在定时器方法上添加此自定义注解以添加redis分布式锁，用以解决多台服务器启动时只启动一次定时器的场景
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ScheduledCluster {
-
-    int expire() default 1;
+    public @interface ScheduledCluster {
 }

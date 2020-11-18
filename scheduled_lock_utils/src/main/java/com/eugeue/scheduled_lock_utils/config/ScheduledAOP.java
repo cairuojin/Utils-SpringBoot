@@ -11,25 +11,28 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
 @Component
 @Aspect
 public class ScheduledAOP {
 
-    @Value("${server.timerName}")
-    private String timeName;
-
     @Autowired
     private RedisTemplate redisTemplate;
+
+//    private static final int expire = 1000 * 60 * 30;   //30分钟
+    private static final int expire = 1000;   //1秒
+
+    private static final SimpleDateFormat PATTERN = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 尝试上锁
      * @param lock
-     * @param expire
      * @return
      */
-    public boolean lock(String lock, int expire) {
+    public boolean lock(String lock) {
         return (boolean) redisTemplate.execute((RedisCallback) connection -> {
             //获取锁
             Boolean acquire = connection.setNX(lock.getBytes(), String.valueOf(System.currentTimeMillis() + expire).getBytes());
@@ -54,16 +57,16 @@ public class ScheduledAOP {
     }
 
 
-
+    /**
+     * AOP方法
+     */
     @Around("@annotation(org.springframework.scheduling.annotation.Scheduled) " +
             "&& @annotation(com.eugeue.scheduled_lock_utils.annotation.ScheduledCluster)")
     public Object doInvoke(ProceedingJoinPoint joinPoint) throws Throwable {
         Signature signature = joinPoint.getSignature();
-        String lockKey = signature.getDeclaringTypeName() + "." + signature.getName();
-        ScheduledCluster annotation = signature.getDeclaringType().getMethod(signature.getName()).getAnnotation(ScheduledCluster.class);
-        if (lock(lockKey, annotation.expire())) {
+        String lockKey = signature.getDeclaringTypeName() + "." + signature.getName() + "." + PATTERN.format(new Date());
+        if (lock(lockKey)) {
             try {
-//                System.out.println("线程（" + Thread.currentThread().getName() + "）获取到锁，开始执行操作");
                 return joinPoint.proceed();
             } catch (Exception e) {
                 return null;

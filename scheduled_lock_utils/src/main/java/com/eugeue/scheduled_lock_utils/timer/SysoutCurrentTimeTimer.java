@@ -7,6 +7,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Component
 public class SysoutCurrentTimeTimer {
 
@@ -16,10 +19,13 @@ public class SysoutCurrentTimeTimer {
     @Value("${server.timerName}")
     private String timeName;
 
-    @Scheduled(cron="0/1 * * * * ? ")
-    @ScheduledCluster(expire = 800)
+    private static final SimpleDateFormat PATTERN = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+
+    @Scheduled(cron="0/3 * * * * ? ")
+    @ScheduledCluster
     public void timer() {
-        System.out.println("打印当前时间" + timeName + System.currentTimeMillis());
+        System.out.println("打印当前时间" + timeName + PATTERN.format(new Date()));
     }
 
 
